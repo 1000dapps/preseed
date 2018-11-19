@@ -1,0 +1,10 @@
+{
+  "tokenName": "Token",
+  "tokenDecimals":18,
+  "tokenSymbol": "TOK",
+  "openingTime": 1842658887,
+  "closingTime": 1942658887,
+  "rate": 10,
+  "cap": 100,
+  "wallet": "0xa6279ef0c0c4bea836e7e22acc445f74bea33cbd"
+}
