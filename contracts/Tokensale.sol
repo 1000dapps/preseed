@@ -396,7 +396,49 @@ contract MintedCrowdsale is Crowdsale {
   }
 }
 
-contract Tokensale is Crowdsale, CappedCrowdsale, TimedCrowdsale {
+contract SharesCrowdsale is Crowdsale {
+  constructor() internal {}
+
+  /**
+   * @dev Reverts if payment amount is less than limit.
+   */
+  modifier onlyPaymentsAbove(uint256 limit) {
+    require(msg.value >= limit);
+    _;
+  }
+
+  /**
+   * @param weiAmount Value in wei to be converted into tokens
+   * @return Number of tokens that can be purchased with the specified _weiAmount
+   */
+  function _getTokenAmount(uint256 weiAmount)
+    internal view returns (uint256)
+  {
+    return weiAmount.mul(rate()).div(10**18);
+  }
+
+  /**
+   * @dev Determines how ETH is stored/forwarded on purchases.
+   */
+  function _forwardFunds() internal {
+    uint256 charge = msg.value.mod(10**18);
+    wallet().transfer(msg.value.sub(charge));
+    msg.sender.transfer(charge);
+  }
+
+  function _preValidatePurchase(
+    address beneficiary,
+    uint256 weiAmount
+  )
+    internal
+    onlyPaymentsAbove(10**18)
+    view
+  {
+    super._preValidatePurchase(beneficiary, weiAmount);
+  }
+}
+
+contract Tokensale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale, SharesCrowdsale {
   constructor(
     uint256 rate,
     address wallet,
