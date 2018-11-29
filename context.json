@@ -2,9 +2,9 @@
   "tokenName": "PRESEED",
   "tokenDecimals": 0,
   "tokenSymbol": "EEE",
-  "openingTime": 1542930250,
-  "closingTime": 1542966284,
-  "rate": 1,
+  "openingTime": 1543523626,
+  "closingTime": 1543524426,
+  "rate": 100,
   "capInEther": 1000,
   "wallet": "0xa6279ef0c0c4bea836e7e22acc445f74bea33cbd"
 }

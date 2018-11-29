@@ -13,7 +13,7 @@ const advanceBlock = () => {
 }
 
 const latestTime = () => {
-  return web3.eth.getBlock('latest').then((block) => block.timestamp);
+  return web3.eth.getBlock('latest').timestamp;
 }
 
 const increaseTime = (duration) => {
@@ -49,4 +49,8 @@ const setTime = async (target) => {
   return increaseTime(diff);
 }
 
-module.exports = { advanceBlock, increaseTime, latestTime, setTime }
+const ether = (n) => {
+  return new web3.BigNumber(web3.toWei(n, 'ether'));
+}
+
+module.exports = { advanceBlock, increaseTime, latestTime, setTime, ether }

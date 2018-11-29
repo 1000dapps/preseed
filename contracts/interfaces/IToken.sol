@@ -27,6 +27,8 @@ interface IToken {
 
   function burn(address from, uint256 value) external returns (bool);
 
+  function isMinter(address account) external returns (bool);
+
   event Transfer(
     address indexed from,
     address indexed to,

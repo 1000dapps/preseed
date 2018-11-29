@@ -402,9 +402,63 @@ contract SharesCrowdsale is Crowdsale {
   /**
    * @dev Reverts if payment amount is less than limit.
    */
-  modifier onlyPaymentsAbove(uint256 limit) {
-    require(msg.value >= limit);
+  modifier canBuyOneToken() {
+    uint256 priceOfTokenInWei = (1 / (rate() + increaseRateValue - decreaseRateValue)) * 10**18;
+    require(msg.value >= priceOfTokenInWei);
     _;
+  }
+
+  event IncreaseRate(
+    uint256 change,
+    uint256 rate
+  );
+
+  event DecreaseRate(
+    uint256 change,
+    uint256 rate
+  );
+
+  uint256 increaseRateValue = 0;
+  uint256 decreaseRateValue = 0;
+
+  /**
+   * @dev Call this method when price of ether increased
+   * @param value Change in USD from start price
+   * @return How much tokens investor will receive per 1 ether
+   */
+  function increaseRateBy(uint256 value)
+    external returns (uint256)
+  {
+    require(token().isMinter(msg.sender));
+
+    increaseRateValue = value;
+    decreaseRateValue = 0;
+
+    uint256 calculatedRate = rate() + increaseRateValue;
+
+    emit IncreaseRate(value, calculatedRate);
+
+    return calculatedRate;
+  }
+
+  /**
+   * @dev Call this method when price of ether decreased
+   * @param value Change in USD from start price
+   * @return How much tokens investor will receive per 1 ether
+   */
+  function decreaseRateBy(uint256 value)
+    external returns (uint256)
+  {
+    require(token().isMinter(msg.sender));
+
+    increaseRateValue = 0;
+    decreaseRateValue = value;
+
+    uint256 calculatedRate = rate() - decreaseRateValue;
+
+    emit DecreaseRate(value, calculatedRate);
+
+    return calculatedRate;
   }
 
   /**
@@ -414,16 +468,15 @@ contract SharesCrowdsale is Crowdsale {
   function _getTokenAmount(uint256 weiAmount)
     internal view returns (uint256)
   {
-    return weiAmount.mul(rate()).div(10**18);
+    uint256 calculatedRate = rate() + increaseRateValue - decreaseRateValue;
+    return weiAmount.mul(calculatedRate).div(10**18);
   }
 
   /**
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
   function _forwardFunds() internal {
-    uint256 charge = msg.value.mod(10**18);
-    wallet().transfer(msg.value.sub(charge));
-    msg.sender.transfer(charge);
+    msg.sender.transfer(msg.value);
   }
 
   function _preValidatePurchase(
@@ -431,7 +484,7 @@ contract SharesCrowdsale is Crowdsale {
     uint256 weiAmount
   )
     internal
-    onlyPaymentsAbove(10**18)
+    canBuyOneToken()
     view
   {
     super._preValidatePurchase(beneficiary, weiAmount);
