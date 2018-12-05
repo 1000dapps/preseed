@@ -418,8 +418,8 @@ contract SharesCrowdsale is Crowdsale {
     uint256 rate
   );
 
-  uint256 increaseRateValue = 0;
-  uint256 decreaseRateValue = 0;
+  uint256 public increaseRateValue = 0;
+  uint256 public decreaseRateValue = 0;
 
   /**
    * @dev Call this method when price of ether increased
@@ -476,7 +476,10 @@ contract SharesCrowdsale is Crowdsale {
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
   function _forwardFunds() internal {
-    msg.sender.transfer(msg.value);
+    uint256 calculatedRate = rate() + increaseRateValue - decreaseRateValue;
+    uint256 charge = msg.value.mul(calculatedRate).mod(10**18);
+    wallet().transfer(msg.value.sub(charge));
+    msg.sender.transfer(charge);
   }
 
   function _preValidatePurchase(
