@@ -1,10 +1,16 @@
 {
-  "tokenName": "PRESEED",
+  "tokenName": "ONEK_E",
   "tokenDecimals": 0,
   "tokenSymbol": "EEE",
-  "openingTime": 1543523626,
-  "closingTime": 1543524426,
-  "rate": 100,
-  "capInEther": 1000,
-  "wallet": "0xa6279ef0c0c4bea836e7e22acc445f74bea33cbd"
+  "openingTime": 1544518800,
+  "closingTime": 1547251200,
+  "rate": 200,
+  "capInEther": 2000,
+  "finalWallet": "0x18b1e85F96B4464009E1630CF5C6b4120A63B068",
+  "wallets": [
+    "0x18b1e85F96B4464009E1630CF5C6b4120A63B068",
+    "0xD948486CfBbdec179ec86d2435A438bBc7a81Fe8",
+    "0xaEdC02E78d6d3bcf7F5ddaF4d2e5F7316984937D",
+    "0xd588775B206d37a157531441B6d42694e3D35E5E"
+  ]
 }

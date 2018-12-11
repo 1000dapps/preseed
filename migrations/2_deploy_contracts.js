@@ -9,6 +9,8 @@ let tokensaleInstance;
 module.exports = function(deployer, network, accounts) {
   const capInWei = context.capInEther * 10**18
 
+  const { rate, finalWallet, address, openingTime, closingTime, wallets } = context
+
   deployer.then(function() {
     const tokenArguments = [context.tokenName, context.tokenSymbol, context.tokenDecimals]
     return deployer.deploy(Token, ...tokenArguments)
@@ -17,7 +19,7 @@ module.exports = function(deployer, network, accounts) {
   }).then(function (instance) {
     tokenInstance = instance
   }).then(function() {
-    const tokensaleArguments = [context.rate, context.wallet, tokenInstance.address, capInWei, context.openingTime, context.closingTime]
+    const tokensaleArguments = [rate, finalWallet, tokenInstance.address, capInWei, openingTime, closingTime, wallets]
     return deployer.deploy(Tokensale, ...tokensaleArguments)
   }).then(function() {
     return Tokensale.deployed()

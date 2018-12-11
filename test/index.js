@@ -56,7 +56,7 @@ contract("Contracts", function(accounts) {
     })
 
     it('should have correct wallet', async () => {
-      assert.equal(await tokensale.wallet(), context.wallet)
+      assert.equal(await tokensale.wallet(), context.finalWallet.toLowerCase())
     })
 
     it('should have cap that is not reached', async function() {
@@ -79,7 +79,7 @@ contract("Contracts", function(accounts) {
     })
 
     it('should sell shares', async () => {
-      await tokensale.buyTokens(accounts[1], { from: accounts[1], value: ether(0.015) })
+      await tokensale.buyTokens(accounts[1], { from: accounts[1], value: ether(0.005) })
 
       const balance = await token.balanceOf(accounts[1])
 

@@ -397,13 +397,20 @@ contract MintedCrowdsale is Crowdsale {
 }
 
 contract SharesCrowdsale is Crowdsale {
-  constructor() internal {}
+  address[] public wallets;
+
+  constructor(
+    address[] _wallets
+  ) internal {
+    wallets = _wallets;
+  }
 
   /**
    * @dev Reverts if payment amount is less than limit.
    */
   modifier canBuyOneToken() {
-    uint256 priceOfTokenInWei = (1 / (rate() + increaseRateValue - decreaseRateValue)) * 10**18;
+    uint256 calculatedRate = rate() + increaseRateValue - decreaseRateValue;
+    uint256 priceOfTokenInWei = 1 ether / calculatedRate;
     require(msg.value >= priceOfTokenInWei);
     _;
   }
@@ -469,17 +476,35 @@ contract SharesCrowdsale is Crowdsale {
     internal view returns (uint256)
   {
     uint256 calculatedRate = rate() + increaseRateValue - decreaseRateValue;
-    return weiAmount.mul(calculatedRate).div(10**18);
+    uint256 tokensAmount = weiAmount.mul(calculatedRate).div(1 ether);
+
+    uint256 charge = weiAmount.mul(calculatedRate).mod(1 ether);
+    if (charge > 0) {
+        tokensAmount += 1;
+    }
+
+    return tokensAmount;
   }
 
   /**
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
   function _forwardFunds() internal {
-    uint256 calculatedRate = rate() + increaseRateValue - decreaseRateValue;
-    uint256 charge = msg.value.mul(calculatedRate).mod(10**18);
-    wallet().transfer(msg.value.sub(charge));
-    msg.sender.transfer(charge);
+    if (weiRaised() > 101 ether) {
+        wallet().transfer(msg.value);
+    } else {
+        uint256 walletsNumber = wallets.length;
+        uint256 amountPerWallet = msg.value.div(walletsNumber);
+
+        for (uint256 i = 0; i < walletsNumber; i++) {
+            wallets[i].transfer(amountPerWallet);
+        }
+
+        uint256 charge = msg.value.mod(walletsNumber);
+        if (charge > 0) {
+            wallets[0].transfer(charge);
+        }
+    }
   }
 
   function _preValidatePurchase(
@@ -497,16 +522,18 @@ contract SharesCrowdsale is Crowdsale {
 contract Tokensale is Crowdsale, MintedCrowdsale, CappedCrowdsale, TimedCrowdsale, SharesCrowdsale {
   constructor(
     uint256 rate,
-    address wallet,
+    address finalWallet,
     address token,
     uint256 cap,
     uint256 openingTime,
-    uint256 closingTime
+    uint256 closingTime,
+    address[] wallets
   )
     public
-    Crowdsale(rate, wallet, IToken(token))
+    Crowdsale(rate, finalWallet, IToken(token))
     CappedCrowdsale(cap)
     TimedCrowdsale(openingTime, closingTime)
+    SharesCrowdsale(wallets)
   {
   }
 }
