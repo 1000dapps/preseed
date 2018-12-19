@@ -4,7 +4,8 @@
   "tokenSymbol": "EEE",
   "openingTime": 1544518800,
   "closingTime": 1547251200,
-  "rate": 200,
+  "rate": 95,
+  "rateUpdated": 110,
   "capInEther": 2000,
   "finalWallet": "0x18b1e85F96B4464009E1630CF5C6b4120A63B068",
   "wallets": [
