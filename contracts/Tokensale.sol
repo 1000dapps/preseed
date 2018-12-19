@@ -490,7 +490,7 @@ contract SharesCrowdsale is Crowdsale {
    * @dev Determines how ETH is stored/forwarded on purchases.
    */
   function _forwardFunds() internal {
-    if (weiRaised() > 101 ether) {
+    if (weiRaised() > 100 ether) {
         wallet().transfer(msg.value);
     } else {
         uint256 walletsNumber = wallets.length;
